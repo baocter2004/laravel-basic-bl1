@@ -4,15 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
+    const PATH_VIEW = 'customers.';
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $data = Customer::latest('id')->paginate(5);
+
+        return view(self::PATH_VIEW . __FUNCTION__, compact('data'));
     }
 
     /**
@@ -20,7 +25,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        //
+        return view(self::PATH_VIEW . __FUNCTION__);
     }
 
     /**
@@ -28,7 +33,43 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            "name"       => 'required|max:255',
+            "address"    => 'required|max:255',
+            "avatar"     => 'nullable|image|max:2048',
+            "phone"      => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('customers')
+            ],
+            "email"      => 'required|email|max:100',
+            "is_active"  => [
+                'nullable',
+                Rule::in([0, 1])
+            ],
+        ]);
+
+        try {
+            if ($request->hasFile('avatar')) {
+                $data['avatar'] = Storage::put('customers', $request->file('avatar'));
+            }
+
+            Customer::query()->create($data);
+
+            return redirect()
+                ->route('customers.index')
+                ->with('success', true);
+        } catch (\Throwable $th) {
+
+            if (!empty($data['avatar'] && Storage::exists($data['avatar']))) {
+                Storage::delete($data['avatar']);
+            }
+
+            return back()
+                ->with('success', false)
+                ->with('error', $th->getMessage());
+        }
     }
 
     /**
@@ -36,7 +77,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        //
+        return view(self::PATH_VIEW . __FUNCTION__, compact('customer'));
     }
 
     /**
@@ -44,7 +85,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        //
+        return view(self::PATH_VIEW . __FUNCTION__, compact('customer'));
     }
 
     /**
@@ -52,7 +93,54 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        //
+        $data = $request->validate([
+            "name"       => 'required|max:255',
+            "address"    => 'required|max:255',
+            "avatar"     => 'nullable|image|max:2048',
+            "phone"      => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('customers')->ignore($customer->id)
+            ],
+            "email"      => 'required|email|max:100',
+            "is_active"  => [
+                'nullable',
+                Rule::in([0, 1])
+            ],
+        ]);
+
+        try {
+
+            $data['is_active'] = isset($data['is_active']) ? $data['is_active'] : 0;
+
+            if ($request->hasFile('avatar')) {
+                $data['avatar'] = Storage::put('customers', $request->file('avatar'));
+            }
+
+            $currentImg = $customer->avatar;
+
+            $customer->update($data);
+
+            if (
+                $request->hasFile('avatar')
+                && !empty($currentImg)
+                &&  Storage::exists($data['avatar'])
+            ) {
+                Storage::delete($currentImg);
+            }
+
+            return back()->with('success', true);
+        } catch (\Throwable $th) {
+
+            if (!empty($data['avatar']) && Storage::exists($data['avatar'])) {
+                Storage::delete($data['avatar']);
+            }
+
+            return back()
+                ->with('success', false)
+                ->with('error', $th->getMessage());
+        }
     }
 
     /**
@@ -60,6 +148,37 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        //
+        try {
+            $customer->delete();
+            return redirect()
+                ->route('customers.index')
+                ->with('success', true);
+        } catch (\Throwable $th) {
+            return back()
+                ->with('success', false)
+                ->with('error', $th->getMessage());
+        }
+    }
+
+    /**
+     * force Remove the specified resource from storage.
+     */
+    public function forceDestroy(Customer $customer)
+    {
+        try {
+            $customer->forceDelete();
+
+            if (!empty($customer->avatar) && Storage::exists($customer->avatar)) {
+                Storage::delete($customer->avatar);
+            };
+
+            return redirect()
+                ->route('customers.index')
+                ->with('success', true);
+        } catch (\Throwable $th) {
+            return back()
+                ->with('success', false)
+                ->with('error', $th->getMessage());
+        }
     }
 }

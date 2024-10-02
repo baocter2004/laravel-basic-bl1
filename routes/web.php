@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
@@ -20,3 +21,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('customers', CustomerController::class);
+
+Route::delete('customers/{customer}/forceDestroy', [CustomerController::class, 'forceDestroy'])
+    ->name('customers.forceDestroy');
