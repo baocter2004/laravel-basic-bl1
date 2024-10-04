@@ -6,7 +6,7 @@
 
 @section('content')
 
-{{-- không được show lỗi này cho user :))) --}}
+    {{-- không được show lỗi này cho user :))) --}}
     @if (session()->has('success') && !session()->get('success'))
         <div class="alert alert-danger">
             {{ session()->get('error') }}

@@ -15,14 +15,17 @@
 <body>
     <header>
         <nav class="nav justify-content-center  ">
-            <a class="nav-link" href="{{ route('customers.index') }}">Danh Sách</a>
-            <a href="{{ route('customers.create') }}" class="nav-link">Thêm Mới</a>
+            <a class="nav-link" href="{{ route('customers.index') }}">Danh Sách CUSTOMERS</a>
+            <a href="{{ route('customers.create') }}" class="nav-link">Thêm Mới CUSTOMERS</a>
+
+            <a class="nav-link" href="{{ route('employees.index') }}">Danh Sách employees</a>
+            <a href="{{ route('employees.create') }}" class="nav-link">Thêm Mới employees</a>
         </nav>
 
     </header>
     <main>
-        <div class="container">
-           @yield('content')
+        <div class="container-fluid">
+            @yield('content')
         </div>
 
     </main>

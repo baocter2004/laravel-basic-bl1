@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
@@ -26,3 +27,6 @@ Route::resource('customers', CustomerController::class);
 
 Route::delete('customers/{customer}/forceDestroy', [CustomerController::class, 'forceDestroy'])
     ->name('customers.forceDestroy');
+
+
+Route::resource('employees', EmployeeController::class);
