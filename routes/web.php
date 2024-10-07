@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Middleware\FlagMiddleware;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,23 +18,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-})->middleware('auth.basic');
-
-Route::middleware([FlagMiddleware::class])->group(function () {
-    Route::resource('customers', CustomerController::class);
-
-    Route::delete('customers/{customer}/forceDestroy', [CustomerController::class, 'forceDestroy'])
-        ->name('customers.forceDestroy');
-
-
-    Route::get('/keke', function () {
-        return view('welcome');
-    })->withoutMiddleware('auth');
 });
-// nếu không đăng nhập thì sẽ chuyển sang trang login
-Route::get('login', function () {
-    echo "đây là trang login cơ!!!";
-})->name('login');
+
+Route::resource('customers', CustomerController::class)->middleware('auth');
+
+Route::delete('customers/{customer}/forceDestroy', [CustomerController::class, 'forceDestroy'])
+    ->name('customers.forceDestroy');
 
 
 Route::resource('employees', EmployeeController::class);
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
