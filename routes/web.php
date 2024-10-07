@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->middleware('auth.basic');
 
 Route::middleware([FlagMiddleware::class])->group(function () {
     Route::resource('customers', CustomerController::class);
