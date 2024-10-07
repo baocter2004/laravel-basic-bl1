@@ -7,7 +7,7 @@
 @section('content')
     @if (session()->has('success') && session()->get('success'))
         <div class="alert alert-info">
-            Thao Tác Thành Công  
+            Thao Tác Thành Công
         </div>
     @endif
     <div class="table-responsive">
@@ -56,8 +56,8 @@
                                 <span class="badge bg-danger">no</span>
                             @endif
                         </td>
-                        <td>{{ $item->department_id }}</td>
-                        <td>{{ $item->manager_id }}</td>
+                        <td>{{ $item->department_id . ' - ' . $item->department_name }}</td>
+                        <td>{{ $item->manager_id . ' - ' . $item->manager_name }}</td>
                         <td>{{ $item->address }}</td>
                         <td>{{ $item->created_at }}</td>
                         <td>{{ $item->updated_at }}</td>

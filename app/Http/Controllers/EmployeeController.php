@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -15,8 +17,29 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $data = Employee::latest('id')->paginate(10);
-
+        $data = Employee::latest('id')
+            ->join('departments as d', 'employees.department_id', '=', 'd.id')
+            ->join('managers as e', 'employees.manager_id', '=', 'e.id')
+            ->select([
+                'employees.id',
+                'employees.first_name',
+                'employees.last_name',
+                'employees.email',
+                'employees.phone',
+                'employees.profile_picture',
+                'employees.date_of_birth',
+                'employees.hire_date',
+                'employees.salary',
+                'employees.is_active',
+                'employees.address',
+                'employees.created_at',
+                'employees.updated_at',
+                'd.id as department_id',
+                'd.name as department_name',
+                'e.id as manager_id',
+                'e.name as manager_name'
+            ])
+            ->paginate(10);
         return view(self::PATH_VIEW . __FUNCTION__, compact('data'));
     }
 
@@ -25,7 +48,9 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view(self::PATH_VIEW . __FUNCTION__);
+        $dataM = Manager::get(['id', 'name']);
+        $dataD = Department::get(['id', 'name']);
+        return view(self::PATH_VIEW . __FUNCTION__, ['dataM' => $dataM, 'dataD' => $dataD]);
     }
 
     /**

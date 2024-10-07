@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Department;
+use App\Models\Manager;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,8 +27,8 @@ class EmployeeFactory extends Factory
             'hire_date'   => fake()->dateTime('now'),
             'salary'   => fake()->numberBetween(30000, 100000),
             'is_active'   => rand(0, 1),
-            'department_id'   => fake()->numberBetween(1, 10),
-            'manager_id'   => fake()->numberBetween(1, 10),
+            'department_id'   => Department::inRandomOrder()->first()->id,
+            'manager_id'   => Manager::inRandomOrder()->first()->id,
             'address'   => fake()->address,
         ];
     }

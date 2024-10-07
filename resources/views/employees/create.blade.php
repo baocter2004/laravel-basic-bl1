@@ -62,11 +62,19 @@
         <div class="row g-3 mt-3">
             <div class="col-md-6">
                 <label for="department_id" class="form-label">Department ID</label>
-                <input type="number" class="form-control" value="{{ old('department_id') }}" name="department_id" id="department_id" placeholder="1">
+                <select name="department_id" id="" class="form-control">
+                    @foreach ($dataD as $item)
+                        <option value="{{$item->id}}">{{$item->id . ' - ' . $item->name}}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="col-md-6">
                 <label for="manager_id" class="form-label">Manager ID</label>
-                <input type="number" class="form-control" value="{{ old('manager_id') }}" name="manager_id" id="manager_id" placeholder="2">
+                <select name="manager_id" id="" class="form-control">
+                    @foreach ($dataM as $item)
+                        <option value="{{$item->id}}">{{$item->id . ' - ' . $item->name}}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
